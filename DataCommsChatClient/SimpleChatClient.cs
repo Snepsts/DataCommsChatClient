@@ -31,8 +31,15 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
+
 class SimpleChatClient
 {
+	private static async Task<string> GetInputAsync() //method to grab input async (type while receiving messages)
+	{
+		return await Task.Run(() => Console.ReadLine());
+	}
+
 	public static void Main(string[] args)
 	{
 		if ((args.Length < 1) || (args.Length > 2))
@@ -44,41 +51,84 @@ class SimpleChatClient
 		IPAddress[] serverIPaddr = serverInfo.AddressList; //addresslist may contain both IPv4 and IPv6 addresses
 
 		byte[] data = new byte[1024];
-		string input, stringData;
+		string input, msg, genMsg;
 		Socket server;
 		server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-		try
+		DateTime currTime = DateTime.Now;
+		genMsg = "SimpleChatClient log generated at: " + currTime + Environment.NewLine;
+		using (System.IO.StreamWriter log = new System.IO.StreamWriter(@"C:\Users\Public\ChatClientLog.txt"))
 		{
-			server.Connect(serverIPaddr, Int32.Parse(args[1]));
-		}
-		catch (SocketException e)
-		{
-			Console.WriteLine("Unable to connect to server.");
-			Console.WriteLine(e.ToString());
-			return;
-		}
+			log.WriteLine(genMsg);
+			log.WriteLine(Environment.NewLine); //more lines to make it clear that the log starts below here
 
-		int recv = server.Receive(data);
-		stringData = Encoding.ASCII.GetString(data, 0, recv);
-		Console.WriteLine(stringData);
+			try
+			{
+				server.Connect(serverIPaddr, Int32.Parse(args[1]));
+			}
+			catch (SocketException e)
+			{
+				string errorMsg = "Unable to connect to server." + Environment.NewLine + e.ToString();
+				Console.WriteLine(errorMsg);
+				log.WriteLine(errorMsg);
 
-		while (true)
-		{
-			input = Console.ReadLine();
-			if (input.Length == 0)
-				continue;
-			if (input == "exit")
-				break;
-			server.Send(Encoding.ASCII.GetBytes(input));
-			data = new byte[1024];
-			recv = server.Receive(data);
-			stringData = Encoding.ASCII.GetString(data, 0, recv);
-			Console.WriteLine(stringData);
+				return;
+			}
+
+			IPEndPoint serverep = (IPEndPoint)server.RemoteEndPoint;
+			string connectMsg = "Connected with " + serverep.Address + " at port " + serverep.Port;
+			Console.WriteLine(connectMsg);
+			log.WriteLine(connectMsg);
+
+			int recv = server.Receive(data); //this section grabs the first message (the welcome to the server message)
+			msg = Encoding.ASCII.GetString(data, 0, recv);
+			Console.WriteLine(msg);
+			log.WriteLine(msg);
+
+			while (true)
+			{
+				Task<string> T = GetInputAsync();
+
+				while (!T.IsCompleted)
+				{
+					if (server.Available > 0)
+					{
+						Console.WriteLine();
+						data = new byte[1024];
+						recv = server.Receive(data);
+						if (recv == 0) //haven't received anything
+							break;
+						//if we get here it means recv had some kind of message for us
+						msg = Encoding.ASCII.GetString(data, 0, recv);
+						Console.WriteLine(msg);
+						log.WriteLine(msg);
+					}
+
+					System.Threading.Thread.Sleep(50); //Wait for .05 seconds before checking again
+				}
+				//when the while loop finishes, we know we have something to send
+
+				input = T.Result;
+
+				if (input.Length == 0)
+					continue;
+
+				if (input == "exit")
+					break;
+
+				currTime = DateTime.Now;
+				string prefix = "[" + currTime + "] client: "; //prepare our prefix to our message (time and name)
+				msg = prefix + input; //create message
+				server.Send(Encoding.ASCII.GetBytes(msg)); //send message
+				Console.WriteLine(msg);
+				log.WriteLine(msg); //record message
+			}
+
+			string disconnectMsg = "Disconnecting from server...";
+			Console.WriteLine(disconnectMsg);
+			log.WriteLine(disconnectMsg);
+			server.Shutdown(SocketShutdown.Both);
+			server.Close();
 		}
-
-		Console.WriteLine("Disconnecting from server...");
-		server.Shutdown(SocketShutdown.Both);
-		server.Close();
 	}
 }
