@@ -55,6 +55,9 @@ class SimpleChatClient
 		Socket server;
 		server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+		Console.Write("Please enter a name: ");
+		string name = Console.ReadLine();
+
 		bool exit = false;
 		DateTime currTime = DateTime.Now;
 		genMsg = "SimpleChatClient log generated at: " + currTime + Environment.NewLine;
@@ -145,7 +148,7 @@ class SimpleChatClient
 				}
 
 				currTime = DateTime.Now;
-				string prefix = "[" + currTime + "] client: "; //prepare our prefix to our message (time and name)
+				string prefix = "[" + currTime + "] " + name + ": "; //prepare our prefix to our message (time and name)
 				msg = prefix + input; //create message
 				server.Send(Encoding.ASCII.GetBytes(msg)); //send message
 				Console.WriteLine(msg);
