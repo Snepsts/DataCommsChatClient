@@ -8,7 +8,7 @@
 
   This program demonstrates the use of Sockets API to connect to a chat service,
   send commands to that service using a socket interface, and receive responses
-  from that service.  The user interface is via a MS Dos window.
+  from that service. The user interface is via a MS Dos window.
 
   This program has been compiled and tested under Microsoft Visual Studio 2017.
 
@@ -20,7 +20,7 @@
  *
  * Program: SimpleChatClient
  * Purpose: contact chatserver, send user input and receive/print server response
- * Usage:   simplechatclient <compname> [portnum]
+ * Usage:   SimpleChatClient <compname> [portnum]
  * Note:    <compname> can be either a computer name, like localhost, xx.cs.semo.edu
  *          or an IP address, like 150.168.0.1
  *
@@ -31,7 +31,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-class SimpleEchoClient
+class SimpleChatClient
 {
 	public static void Main(string[] args)
 	{
