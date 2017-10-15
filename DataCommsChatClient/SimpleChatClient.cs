@@ -55,6 +55,7 @@ class SimpleChatClient
 		Socket server;
 		server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+		bool exit = false;
 		DateTime currTime = DateTime.Now;
 		genMsg = "SimpleChatClient log generated at: " + currTime + Environment.NewLine;
 		using (System.IO.StreamWriter log = new System.IO.StreamWriter(@"C:\Users\Public\ChatClientLog.txt"))
@@ -96,16 +97,35 @@ class SimpleChatClient
 						Console.WriteLine();
 						data = new byte[1024];
 						recv = server.Receive(data);
-						if (recv == 0) //haven't received anything
+
+						if (recv == 0) //server non-responsive
+						{
+							exit = true;
 							break;
-						//if we get here it means recv had some kind of message for us
+						}
+
 						msg = Encoding.ASCII.GetString(data, 0, recv);
+
+						if (msg == "exit")
+						{
+							string exitMsg = "Exit received, initiating disconnect.";
+							Console.WriteLine(exitMsg);
+							log.WriteLine(exitMsg);
+
+							exit = true;
+							break;
+						}
+
 						Console.WriteLine(msg);
 						log.WriteLine(msg);
 					}
 
 					System.Threading.Thread.Sleep(50); //Wait for .05 seconds before checking again
 				}
+
+				if (exit)
+					break;
+
 				//when the while loop finishes, we know we have something to send
 
 				input = T.Result;
@@ -114,7 +134,15 @@ class SimpleChatClient
 					continue;
 
 				if (input == "exit")
+				{
+					server.Send(Encoding.ASCII.GetBytes(input));
+					log.WriteLine(input);
+					string exitMsg = "Exit sent, initiating disconnect.";
+					Console.WriteLine(exitMsg);
+					log.WriteLine(exitMsg);
+
 					break;
+				}
 
 				currTime = DateTime.Now;
 				string prefix = "[" + currTime + "] client: "; //prepare our prefix to our message (time and name)
