@@ -1,21 +1,26 @@
 ﻿/******************************************************************************
-            SimpleEchoClient.cs - Simple Echo client using sockets 
-
-  This program demonstrates the use of Sockets API to connect to an ECHO service, 
-  send commands to that service using a socket interface, and receive responses 
-  from that service.  The user interface is via a MS Dos window.
-
-  This program has been compiled and tested under Microsoft Visual Studio 2010.
+            SimpleEchoClient.cs - Simple Echo client using sockets
 
   Copyright 2012 by Ziping Liu for VS2010
+  Prepared for CS480, Southeast Missouri State University
+
+            SimpleChatClient.cs - Simple Chat client using sockets
+
+  This program demonstrates the use of Sockets API to connect to a chat service,
+  send commands to that service using a socket interface, and receive responses
+  from that service.  The user interface is via a MS Dos window.
+
+  This program has been compiled and tested under Microsoft Visual Studio 2017.
+
+  Copyright 2017 by Michael Ranciglio for VS2017
   Prepared for CS480, Southeast Missouri State University
 
 ******************************************************************************/
 /*-----------------------------------------------------------------------
  *
- * Program: SimpleEchoClient
- * Purpose: contact echoserver, send user input and print server response
- * Usage:   simpleechoclient <compname> [portnum]
+ * Program: SimpleChatClient
+ * Purpose: contact chatserver, send user input and receive/print server response
+ * Usage:   simplechatclient <compname> [portnum]
  * Note:    <compname> can be either a computer name, like localhost, xx.cs.semo.edu
  *          or an IP address, like 150.168.0.1
  *
