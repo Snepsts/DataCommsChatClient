@@ -1,4 +1,4 @@
-# Echo Chat Client
+# Chat Client
 #### By: Michael Ranciglio and Will Mertz
 
 ## How to use
@@ -8,7 +8,7 @@ Visual Studio and compile it there. It is assumed you can figure that out
 yourself.
 
 NOTE: This project was designed to be used in conjunction with the
-DataCommsEchoChatServer project, so you'll want to have that too. You'll also want
+DataCommsChatServer project, so you'll want to have that too. You'll also want
 to run this after running that one.
 
 ### Running
@@ -23,6 +23,6 @@ client.
 	* The second for the port/application number you run it on.
 		* We recommended using something around 2000x (x being 0-9), make sure
 		you use the same number for this client as you did for the server.
-	* i.e. DataCommsEchoChatClient.exe localhost 20003
+	* i.e. DataCommsChatClient.exe localhost 20003
 * You should be good to use our basic Echo Chat setup now!
 * You can exit the application by sending the message "exit".
